@@ -7,9 +7,12 @@ function App() {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
 
+  // 🔗 Replace with your backend URL
+  const BASE_URL = "https://expense-tracker-backend-2hgl.onrender.com";
+
   // Fetch transactions
   const fetchTransactions = async () => {
-    const res = await fetch("https://expense-tracker-backend-2hgl.onrender.com/transactions");
+    const res = await fetch(`${BASE_URL}/transactions`);
     const data = await res.json();
     setTransactions(data);
   };
@@ -22,7 +25,7 @@ function App() {
   const addTransaction = async () => {
     if (!title || !amount) return;
 
-    await fetch("https://expense-tracker-backend-2hgl.onrender.com/add", {
+    await fetch(`${BASE_URL}/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,7 +40,7 @@ function App() {
 
   // Delete transaction
   const deleteTransaction = async (id) => {
-    await fetch(`https://expense-tracker-backend-2hgl.onrender.com/delete/${id}`, {
+    await fetch(`${BASE_URL}/delete/${id}`, {
       method: "DELETE",
     });
     fetchTransactions();
@@ -64,9 +67,9 @@ function App() {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}> Expense Tracker</h1>
+      <h1 style={styles.heading}>💰 Expense Tracker</h1>
 
-      {/* Balance Card */}
+      {/* Balance */}
       <div style={styles.card}>
         <h2>Balance: ₹{balance}</h2>
         <p style={{ color: "green" }}>Income: ₹{income}</p>
@@ -77,25 +80,29 @@ function App() {
       <div style={styles.card}>
         <h2>Spending Overview 📊</h2>
 
-        <PieChart width={300} height={300}>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-            dataKey="value"
-            label
-          >
-            {data.map((entry, index) => (
-              <Cell key={index} fill={COLORS[index]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
+        {income === 0 && expense === 0 ? (
+          <p>No data to display</p>
+        ) : (
+          <PieChart width={300} height={300}>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              dataKey="value"
+              label
+            >
+              {data.map((entry, index) => (
+                <Cell key={index} fill={COLORS[index]} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        )}
       </div>
 
-      {/* Input Section */}
+      {/* Input */}
       <div style={styles.inputBox}>
         <input
           style={styles.input}
@@ -106,8 +113,8 @@ function App() {
 
         <input
           style={styles.input}
-          placeholder="Amount"
           type="number"
+          placeholder="Amount"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
